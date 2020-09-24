@@ -38,3 +38,10 @@ resource "azurerm_virtual_machine_data_disk_attachment" "managed_disk_attach" {
   lun                = count.index + 10
   caching            = "ReadWrite"
 }
+resource "azurerm_virtual_machine_data_disk_attachment" "managed_disk_attach" {
+  count              = length(var.instances) * var.nb_disks_per_instance
+  managed_disk_id    = azurerm_managed_disk.managed_disk.*.id[count.index]
+  virtual_machine_id = azurerm_linux_virtual_machine.vm.*.id[ceil((count.index + 1) * 1.0 / var.nb_disks_per_instance) - 1]
+  lun                = count.index + 10
+  caching            = "ReadWrite"
+}
